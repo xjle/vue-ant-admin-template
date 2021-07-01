@@ -1,0 +1,83 @@
+import Vue from 'vue'
+import {
+  Button, 
+  Row, 
+  Col, 
+  Modal, 
+  Select, 
+  Input, 
+  Form, 
+  FormModel, 
+  Tabs, 
+  Table, 
+  Layout, 
+  Spin, 
+  ConfigProvider, 
+  Breadcrumb, 
+  Card, 
+  Pagination, 
+  Popover, 
+  Drawer, 
+  Radio, 
+  Cascader, 
+  Upload, 
+  PageHeader, 
+  Icon, 
+  Switch, 
+  Dropdown, 
+  Menu, 
+  Tree, 
+  Collapse,
+  InputNumber,
+  Divider,
+  TreeSelect,
+  List,
+  Popconfirm,
+  Checkbox,
+  DatePicker,
+  Tooltip,
+  Result,
+  AutoComplete,
+  Tag
+} from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
+Vue.use(AutoComplete)
+Vue.use(Tooltip)
+Vue.use(Checkbox)
+Vue.use(List)
+Vue.use(InputNumber)
+Vue.use(Col)
+Vue.use(Row)
+Vue.use(Divider)
+Vue.use(Button)
+Vue.use(Icon)
+Vue.use(PageHeader)
+Vue.use(Card)
+Vue.use(Input)
+Vue.use(Table)
+Vue.use(Pagination)
+Vue.use(ConfigProvider)
+Vue.use(Popover)
+Vue.use(Form)
+Vue.use(Radio)
+Vue.use(Menu)
+Vue.use(Dropdown)
+Vue.use(Modal)
+Vue.use(Select)
+Vue.use(Tree)
+Vue.use(TreeSelect)
+Vue.use(Drawer)
+Vue.use(FormModel);
+Vue.use(Tabs);
+Vue.use(Layout);
+Vue.use(Breadcrumb);
+Vue.use(Cascader);
+Vue.use(Upload);
+Vue.use(Switch);
+Vue.use(Collapse);
+Vue.use(Spin);
+Vue.use(Popconfirm);
+Vue.use(DatePicker);
+Vue.use(Tooltip);
+Vue.use(Result);
+Vue.use(Tag);

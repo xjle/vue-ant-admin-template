@@ -1,0 +1,26 @@
+body,html{
+  margin: 0;
+  padding: 0;
+  background: #f0f2f5;
+}
+/* #app{
+  height: 100%;
+  overflow-y: auto;
+} */
+::-webkit-scrollbar {
+  width: 12px;
+}
+/* 滚动槽 */
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #a7a3a3;
+  -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.5);
+  
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #7c7878;
+}
