@@ -33,7 +33,7 @@
           v-decorator="[
             'username',
             {
-              rules: [{ required: true, message: '请输入您的用户名!' }],
+              rules: [{ required: true, message: '请输入您的用户名!',whitespace:true }],
             },
           ]"
           placeholder="用户名"
@@ -50,7 +50,7 @@
           v-decorator="[
             'password',
             {
-              rules: [{ required: true, message: '请输入您的密码!' }],
+              rules: [{ required: true, message: '请输入您的密码!',whitespace:true }],
             },
           ]"
           type="password"
@@ -70,7 +70,7 @@
               v-decorator="[
                 'captcha',
                 {
-                  rules: [{ required: true, message: '请输入验证码!' }],
+                  rules: [{ required: true, message: '请输入验证码!',whitespace:true }],
                 },
               ]"
               placeholder="验证码"
@@ -117,7 +117,7 @@
         }"
         :wrapper-col="{ span: 24 }"
       >
-        <router-link to="/resetPassword">忘记密码</router-link>
+        <router-link to="/forgotPassword">忘记密码</router-link>
       </a-form-item>
     </a-form>
   </a-modal>

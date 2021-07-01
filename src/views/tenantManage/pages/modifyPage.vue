@@ -20,6 +20,7 @@
                 {
                   required: true,
                   message: '请输入租户名称',
+                  whitespace:true
                 },
               ],
             },
@@ -42,6 +43,7 @@
                 {
                   required: true,
                   message: '请选择租户管理员',
+                 
                 },
               ],
             },
@@ -107,7 +109,7 @@
                     </a-form-model-item>
                   </a-row>
                   <a-row>
-                    <a-col :span="24" style="color: rgba(0, 0, 0, 0.85)">
+                    <a-col :span="24" style="color: rgba(0, 0, 0, 0.85)" >
                       分配计算资源
                     </a-col>
                     <a-col :span="24" :push="4">

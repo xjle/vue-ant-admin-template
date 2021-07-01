@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '../store/index.js'
 
 Vue.use(VueRouter)
 
@@ -8,6 +9,12 @@ const routes = [
     path: '/',
     name: 'home',
     component: () => import('../layouts/index.vue'),
+    beforeEnter:(to, from, next)=>{
+      // const isLogin = store.state.isLogin;// 因刷新页面导致isLogin初始化
+      const isLogin = localStorage.getItem('isLogin')
+      if(isLogin) next()
+      else next('/login')
+    },
     children: [
       {
         path: 'tenantManage',
@@ -41,9 +48,9 @@ const routes = [
     component: () => import('../views/login/index.vue')
   },
   {
-    path: '/resetPassword',
-    name: 'resetPassword',
-    component: () => import('../views/resetPassword/index.vue')
+    path: '/forgotPassword',
+    name: 'forgotPassword',
+    component: () => import('../views/forgotPassword/index.vue')
   },
   {
     path: '*',
@@ -57,16 +64,18 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-router.beforeEach((to,from,next)=>{
-  if (to.path === '/login') {
-    next()
-  }else{
-    let isLogin = localStorage.getItem('isLogin')
-    if (!isLogin) {
-      next('/login')
-    }else{
-      next()
-    }
-  }
-})
+// 推出登录后无法跳转找回密码页面
+// router.beforeEach((to,from,next)=>{
+//   if (to.path === '/login') {
+//     next()
+//   }else{
+//     let isLogin = localStorage.getItem('isLogin')
+//     if (!isLogin) {
+//       console.log(111);
+//       next('/login')
+//     }else{
+//       next()
+//     }
+//   }
+// })
 export default router

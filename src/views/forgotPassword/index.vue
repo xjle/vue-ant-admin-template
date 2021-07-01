@@ -34,7 +34,7 @@
           v-decorator="[
             'account',
             {
-              rules: [{ required: true, message: '请输入您的账号!' }],
+              rules: [{ required: true, message: '请输入您的账号!',whitespace:true }],
             },
           ]"
           placeholder="请输入内容"
@@ -51,7 +51,7 @@
           v-decorator="[
             'userName',
             {
-              rules: [{ required: true, message: '请输入您的用户名!' }],
+              rules: [{ required: true, message: '请输入您的用户名!',whitespace:true }],
             },
           ]"
           placeholder="请输入内容"
@@ -68,7 +68,7 @@
           v-decorator="[
             'email',
             {
-              rules: [{ required: true, message: '请输入您的邮箱!' }],
+              rules: [{ required: true, message: '请输入您的邮箱!',whitespace:true }],
             },
           ]"
           placeholder="请输入内容"
@@ -104,14 +104,13 @@
     </a-form>
     
   </a-modal>
-  <ReminderTip ref="reminderTipRef" textTitle="登录失败" title="温馨提示" text="账号错误"/>
+  <!-- <ReminderTip ref="reminderTipRef" textTitle="登录失败" title="温馨提示" text="账号错误"/> -->
   </div>
 </template>
 <script>
-import ReminderTip from '@/components/reminderTip'
 export default {
   components:{
-    ReminderTip
+    
   },
   data() {
     return {
@@ -131,8 +130,7 @@ export default {
       });
     },
     onReset() {
-      this.$refs.reminderTipRef.visible = true
-      console.log("取消");
+     this.$router.go(-1)
     },
   },
 };

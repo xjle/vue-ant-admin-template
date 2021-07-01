@@ -8,9 +8,15 @@ import { fun } from './utils/public'
 import rsaUtil from './utils/rsaUtil'
 import showConfirm from '@/utils/showConfirm'
 import axios from 'axios';
-import {
-  message,
-} from 'ant-design-vue';
+import Nprogress from 'nprogress';
+import 'nprogress/nprogress.css' // Progress 进度条样式
+Nprogress.configure({
+  showSpinner: false
+}, {
+  ease: 'ease',
+  speed: 600
+});
+import { message} from 'ant-design-vue';
 Vue.config.productionTip = false
 Vue.prototype.$msg = message;
 Vue.prototype.$rsaUtil = rsaUtil; //rsa加密
@@ -31,7 +37,7 @@ if (store && store.state) {
   // }
   //拦截请求
   axios.interceptors.request.use(config => {
-    // Nprogress.start();// 加载条
+    Nprogress.start();// 加载条
     // store.dispatch('SET_SPINNING', true); // loding
     return config
   }, error => {
@@ -53,7 +59,7 @@ if (store && store.state) {
       localStorage.setItem('isLogin', true); //设置登录状态
     }
     // store.dispatch('SET_SPINNING', false); //关闭loading遮罩
-    // Nprogress.done();
+    Nprogress.done();
     return config
   }, error => {
     

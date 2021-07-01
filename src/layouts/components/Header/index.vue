@@ -3,7 +3,7 @@
     <a-dropdown class="app-info">
       <template #overlay>
         <a-menu>
-          <a-menu-item key="1">更改密码</a-menu-item>
+          <a-menu-item key="1" @click="onChagnePassword">修改密码</a-menu-item>
           <a-menu-item key="2" @click="onLogout">登出</a-menu-item>
         </a-menu>
       </template>
@@ -13,14 +13,17 @@
         <a-icon type="down" />
       </a-button>
     </a-dropdown>
+    <ChagePassword ref="chagePasswordRef"/>
   </div>
 </template>
 <script>
 import { logout } from "@/api/login";
+import ChagePassword from '@/components/ChagePassword'
 export default {
   data() {
     return {};
   },
+  components:{ChagePassword},
   methods: {
     onLogout() {
       const _this = this;
@@ -41,6 +44,9 @@ export default {
       };
       this.$showConfirm(obj);
     },
+    onChagnePassword(){
+      this.$refs.chagePasswordRef.visible = true
+    }
   },
 };
 </script>
