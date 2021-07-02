@@ -6,54 +6,100 @@
         :model="formState"
         @submit="onSearch"
         @submit.native.prevent
+        :label-col="{
+          sm: { span: 6 },
+          md: { span: 6 },
+          xl: { span: 6 },
+          xxl: { span: 6 },
+        }"
+        :wrapper-col="{ span: 18 }"
       >
-        <!-- label="编码" -->
-        <a-form-model-item>
-          <!--  v-model="formState.code" -->
-          <a-input placeholder="请输入编码/名称/邮箱/组织查询"> </a-input>
-        </a-form-model-item>
-        <!-- <a-form-model-item label="名称">
-          <a-input v-model="formState.name" placeholder="请输入名称">
-          </a-input>
-        </a-form-model-item>
-        <a-form-model-item label="邮箱">
-          <a-input v-model="formState.email" placeholder="请输入邮箱">
-          </a-input>
-        </a-form-model-item>
-        <a-form-model-item label="组织">
-          <a-input v-model="formState.organize" placeholder="请输入组织">
-          </a-input>
-        </a-form-model-item>
-        -->
-        <a-form-model-item label="租户管理">
-          <a-select
-            placeholder="选择是否租户管理员"
-            v-model="formState.isFlag"
-            style="width: 100px"
-            ref="select"
-          >
-            <a-select-option value="">全部</a-select-option>
-            <a-select-option
-              v-for="item in selectList"
-              :key="item.keyCode"
-              :value="item.keyCode"
-              >{{ item.keyValue }}</a-select-option
+        <a-row style="margin-bottom: 0.16rem">
+          <a-col :span="8">
+            <a-form-model-item label="编码">
+              <a-input
+                class="width-input"
+                v-model="formState.code"
+                placeholder="请输入编码"
+              >
+              </a-input>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="8">
+            <a-form-model-item label="名称">
+              <a-input
+                class="width-input"
+                v-model="formState.name"
+                placeholder="请输入名称"
+              >
+              </a-input>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="8">
+            <a-form-model-item label="邮箱">
+              <a-input
+                class="width-input"
+                v-model="formState.email"
+                placeholder="请输入邮箱"
+              >
+              </a-input>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="8">
+            <a-form-model-item label="组织">
+              <a-input
+                class="width-input"
+                v-model="formState.organize"
+                placeholder="请输入组织"
+              >
+              </a-input>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="8">
+            <a-form-model-item label="租户管理">
+              <a-select
+                placeholder="选择是否租户管理员"
+                v-model="formState.isFlag"
+                class="width-input"
+                ref="select"
+              >
+                <a-select-option value="">全部</a-select-option>
+                <a-select-option
+                  v-for="item in selectList"
+                  :key="item.keyCode"
+                  :value="item.keyCode"
+                  >{{ item.keyValue }}</a-select-option
+                >
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="8">
+            <a-form-model-item
+              :label-col="{
+                sm: { span: 6 },
+                md: { span: 6 },
+                xl: { span: 6 },
+                xxl: { span: 6 },
+              }"
+              :wrapper-col="{ span: 10 }"
+              style="text-align:right;"
             >
-          </a-select>
-        </a-form-model-item>
-        <a-form-model-item>
-          <a-button
-            type="primary"
-            shape="circle"
-            html-type="submit"
-            style="margin-right: 0.16rem"
-          >
-            <a-icon type="search" />
-          </a-button>
-          <a-button type="default" shape="circle" @click="onClear">
-            <a-icon type="redo" />
-          </a-button>
-        </a-form-model-item>
+              <a-button
+                type="primary"
+                shape="circle"
+                html-type="submit"
+                style="margin-right: 0.16rem"
+              >
+                <a-icon type="search" />
+              </a-button>
+              <a-button type="default" shape="circle" @click="onClear">
+                <a-icon type="redo" />
+              </a-button>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-form-model>
     </a-card>
     <a-card style="margin-top: 0.16rem">
@@ -69,11 +115,11 @@
       >
       </a-table>
       <Pagination
-      :total="total"
-      @loadData="loadData"
-      :current="current"
-      :pageSize="pageSize"
-    />
+        :total="total"
+        @loadData="loadData"
+        :current="current"
+        :pageSize="pageSize"
+      />
     </a-card>
   </div>
 </template>
@@ -144,13 +190,13 @@ const data = [
   },
 ];
 export default {
-   components: {
+  components: {
     Pagination,
   },
   mixins: [listMixin],
   data() {
     return {
-      total:10,
+      total: 10,
       columns,
       data,
       formState: {
@@ -180,9 +226,9 @@ export default {
     onSearch() {
       console.log(5555);
     },
-    getList(){
-      console.log('getList');
-    }
+    getList() {
+      console.log("getList");
+    },
   },
 };
 </script>
@@ -191,5 +237,11 @@ export default {
 .user-manage {
   // height: calc(100% - 128px);
   overflow-y: auto;
+  .ant-form-item {
+    width: 100%;
+  }
+}
+.width-input {
+  width: 200px;
 }
 </style>
