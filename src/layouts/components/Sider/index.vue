@@ -1,19 +1,38 @@
 <template>
-  <a-menu
-    theme="dark"
-    mode="inline"
-    @click="menuClick"
-    :default-selected-keys="[this.$route.path.split('/')[1]]"
-  >
-    <a-menu-item v-for="item in menuList" :key="item.name">
-      <!-- <a-icon type="user" /> -->
-      <router-link :to="item.path"
-        >{{ item.title }}</router-link
-      >
-    </a-menu-item>
-  </a-menu>
+  <div>
+    <a-menu
+      :default-selected-keys="[this.$route.path.split('/')[1]]"
+      mode="inline"
+      theme="dark"
+    >
+      <template v-for="item in menuList">
+        <a-sub-menu
+          v-if="item.children && item.children.length > 0"
+          :key="item.id"
+        >
+          <span slot="title">
+            <a-icon type="appstore" />
+            <span>{{ item.title }}</span>
+          </span>
+          <a-menu-item v-for="subItem in item.children" :key="subItem.id">
+            <router-link :to="subItem.path">
+              <a-icon type="appstore" />
+              <span>{{ subItem.title }}</span>
+            </router-link>
+          </a-menu-item>
+        </a-sub-menu>
+        <a-menu-item v-else :key="item.id">
+          <router-link :to="item.path">
+            <a-icon type="appstore" />
+            <span> {{ item.title }}</span>
+          </router-link>
+        </a-menu-item>
+      </template>
+    </a-menu>
+  </div>
 </template>
-<script >
+
+<script>
 const menuList = [
   {
     title: "多租户管理",
@@ -21,6 +40,22 @@ const menuList = [
     path: "/tenantManage",
     name: "tenantManage",
     menuCode: "tenant_manage",
+    children: [
+      // {
+      //   title: "多租户管理d",
+      //   id: "tenant_manage2",
+      //   path: "/tenantManage",
+      //   name: "tenantManage",
+      //   menuCode: "tenant_manage",
+      // },
+      // {
+      //   title: "多租户管理f",
+      //   id: "tenant_manage3",
+      //   path: "/tenantManage",
+      //   name: "tenantManage",
+      //   menuCode: "tenant_manage",
+      // },
+    ],
   },
   {
     title: "用户管理",
@@ -30,24 +65,12 @@ const menuList = [
     menuCode: "user_manage",
   },
 ];
-
 export default {
-  methods: {
-    menuClick(e) {
-      // this.defaultSelectedKeys = e.keyPath;
-      // this.$store.commit(
-      //   "RESET_DEFAULT_SELECTEDKEYS",
-      //   this.defaultSelectedKeys
-      // );
-    },
-  },
   data() {
     return {
       menuList,
     };
   },
+  methods: {},
 };
 </script>
-
-<style lang="less" scoped>
-</style>

@@ -53,6 +53,7 @@
 <script>
 import Header from "./components/Header/index.vue";
 import Sider from "./components/Sider/index.vue";
+// import Sider from "@/components/MenuList";
 export default {
   components: {
     Header,
