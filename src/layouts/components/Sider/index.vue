@@ -71,6 +71,9 @@ export default {
       menuList,
     };
   },
+  mounted(){
+    console.log(this.$route.path,'yjl');
+  },
   methods: {},
 };
 </script>

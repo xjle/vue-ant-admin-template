@@ -9,7 +9,10 @@
           @submit.native.prevent
         >
           <a-form-model-item label="名称">
-            <a-input v-model="formState.name" placeholder="请输入租户名称">
+            <a-input
+              v-model="formState.tenantName"
+              placeholder="请输入租户名称"
+            >
             </a-input>
           </a-form-model-item>
           <a-form-model-item>
@@ -34,19 +37,17 @@
         <a-table
           :columns="columns"
           :data-source="data"
-          rowKey="id"
+          rowKey="tenantId"
           bordered
           :pagination="false"
         >
           <template slot="roles" slot-scope="text, record">
             <a-tag v-for="(item, i) in record.roles" :key="i">
-              {{ item }}
+              {{item.systemName}}
             </a-tag>
           </template>
           <template slot="action" slot-scope="text, record">
             <a-button type="link"><a-icon type="edit" />编辑</a-button>
-            <!-- theme="twoTone"
-              two-tone-color="#eb2f96" -->
             <a-divider type="vertical" />
             <a-button
               type="link"
@@ -75,10 +76,11 @@
 <script >
 import Pagination from "@/components/Pagination";
 import listMixin from "@/mixins/listMixin";
+import { tenantList, systemList } from "@/api/tenant";
 const columns = [
   {
-    dataIndex: "name",
-    key: "name",
+    dataIndex: "tenantName",
+    key: "tenantName",
     title: "租户名称",
     align: "center",
   },
@@ -91,14 +93,14 @@ const columns = [
   },
   {
     title: "租户管理员",
-    dataIndex: "manage",
-    key: "manage",
+    dataIndex: "adminAccountName",
+    key: "adminAccountName",
     align: "center",
   },
   {
     title: "创建时间",
-    dataIndex: "creatTime",
-    key: "creatTime",
+    dataIndex: "createdTime",
+    key: "createdTime",
     align: "center",
   },
 
@@ -110,41 +112,54 @@ const columns = [
   },
 ];
 
-const data = [
-  {
-    id: "1",
-    name: "东风本田有限公司",
-    manage: "张三",
-    creatTime: "2020-12-30 12:20:00",
-    roles: ["资产平台", "开发平台", "开放平台", "运营平台", "采集平台"],
-  },
-  {
-    id: "2",
-    name: "东风风神有限公司",
-    manage: "里斯",
-    creatTime: "2020-12-30 12:20:00",
-    roles: ["资产平台", "开发平台", "开放平台"],
-  },
-];
+const data = [];
 
 export default {
   components: {
     Pagination,
   },
-  computed:{
-    toggleShow: function() { return this.$route.meta.show }
+  computed: {
+    toggleShow: function () {
+      return this.$route.meta.show;
+    },
+  },
+  mounted() {
+    this.getSystemList();
   },
   mixins: [listMixin],
   methods: {
-    getList() {
-      console.log("getList");
-      
+    async getSystemList() {
+      const { data } = await systemList();
+      if (data.code === "0") {
+        this.rolesList = data.data;
+      }
+    },
+    async getList() {
+      const _this = this
+      const obj = {
+        curPage: this.current,
+        pageSize: this.pageSize,
+        tenantName: this.formState.tenantName,
+      };
+      const { data } = await tenantList(obj);
+      if (data.code === "0") {
+        this.total = data.total;
+        this.data = data.data;
+        this.data.forEach(item=>{
+          item.roles = []
+          item.tenantSystemEntityList.forEach(subItem=>{
+            item.roles = _this.rolesList.filter(e=>e.systemCode===subItem.systemCode)
+          })
+        })
+      } else this.$msg.error(data.msg);
     },
     onSearch() {
-      console.log(this.formState.name);
+     this.current = 1;
+     this.getList()
     },
     onClear() {
       this.formState.name = "";
+      this.getList()
     },
     onDelFunc() {},
     onAddPage() {
@@ -156,11 +171,12 @@ export default {
   data() {
     return {
       formState: {
-        name: "",
+        tenantName: "",
       },
       columns,
       data,
-      total: 10,
+      total: 0,
+      rolesList: [],
     };
   },
 };

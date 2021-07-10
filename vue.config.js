@@ -37,6 +37,13 @@ module.exports = {
         secure: false,
         ws: true,
       },
+      '/mocs-tenant': {
+        target: process.env.VUE_APP_TENANTURL,
+        changeOrigin: true,
+        cookieDomainRewrite: "localhost",
+        secure: false,
+        ws: true,
+      },
     }
   },
   configureWebpack: {
