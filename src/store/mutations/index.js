@@ -5,4 +5,7 @@ export default {
   SET_USERINFO:(state,payload)=>{
     state.userInfo = payload;
   },
+  SET_SPINNING: (state, payload) => {
+    state.spinning = payload;
+  },
 }

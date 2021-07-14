@@ -38,7 +38,7 @@ if (store && store.state) {
   //拦截请求
   axios.interceptors.request.use(config => {
     Nprogress.start();// 加载条
-    // store.dispatch('SET_SPINNING', true); // loding
+    store.dispatch('SET_SPINNING', true); // loding
     return config
   }, error => {
 
@@ -58,11 +58,13 @@ if (store && store.state) {
       store.commit('SET_ISLOGIN',true)
       localStorage.setItem('isLogin', true); //设置登录状态
     }
-    // store.dispatch('SET_SPINNING', false); //关闭loading遮罩
+    store.dispatch('SET_SPINNING', false); //关闭loading遮罩
     Nprogress.done();
     return config
   }, error => {
-    
+    setTimeout(() => {
+      store.dispatch('SET_SPINNING', false);
+    }, 5000)
   })
 }
 

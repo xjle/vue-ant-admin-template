@@ -27,10 +27,7 @@
         </a-row>
       </a-layout-header>
       <!-- 内容 -->
-      <a-layout-content
-        class="app-content"
-       
-      >
+      <a-layout-content class="app-content">
         <a-breadcrumb class="app-breadcrumb" :routes="routes">
           <template
             slot="itemRender"
@@ -44,6 +41,10 @@
             </router-link>
           </template>
         </a-breadcrumb>
+        <div class="spin" v-if="spinning">
+          <a-spin :spinning="spinning" wrapperClassName="spinSon" size="large">
+          </a-spin>
+        </div>
         <router-view></router-view>
       </a-layout-content>
     </a-layout>
@@ -66,6 +67,12 @@ export default {
       collapsed: false,
       routes: [],
     };
+  },
+  computed: {
+    spinning() {
+      console.log(this.$store.state.spinning);
+      return this.$store.state.spinning;
+    },
   },
   watch: {
     // 监听路由变化
@@ -113,6 +120,25 @@ export default {
       line-height: 32px;
       padding: 0 0.16rem;
       // padding: 0.16rem 0.16rem 0 0.16rem;
+    }
+    .spin {
+      position: absolute;
+      width: 100%;
+      z-index: 100;
+      top: 0;
+      left: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #a7a3a3;
+      background: rgba(0, 0, 0, 0.5);
+      .ant-spin-container {
+        height: 100% !important;
+      }
+      .spinSon {
+        height: 100% !important;
+      }
     }
   }
 }

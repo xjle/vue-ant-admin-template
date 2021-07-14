@@ -10,5 +10,8 @@ export default {
     }).catch(error => {
       reject(error)
     })
-  }
+  },
+  SET_SPINNING(CONTEXT,payload){
+    CONTEXT.commit('SET_SPINNING',payload)
+},
 }
