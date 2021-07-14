@@ -1,5 +1,7 @@
 <template>
-  <a-card class="modify-page">
+  <!-- 暂时不使用 -->
+  <!-- 开发多租户管理列表页面，开发新增多租户列表页面 -->
+  <a-card>
     <a-form
       :form="form"
       :label-col="{
@@ -8,19 +10,36 @@
         xl: { span: 3 },
         xxl: { span: 3 },
       }"
-      :wrapper-col="{ span: 6 }"
+      :wrapper-col="{ span: 8 }"
       @submit="onSubmit"
     >
-      <a-form-item label="租户">
+      <a-form-item label="租户编码">
         <a-input
           v-decorator="[
-            `name`,
+            `tenantCode`,
+            {
+              rules: [
+                {
+                  required: true,
+                  message: '请输入租户编码',
+                  whitespace: true,
+                },
+              ],
+            },
+          ]"
+          placeholder="请输入租户编码"
+        ></a-input>
+      </a-form-item>
+      <a-form-item label="租户名称">
+        <a-input
+          v-decorator="[
+            `tenantName`,
             {
               rules: [
                 {
                   required: true,
                   message: '请输入租户名称',
-                  whitespace:true
+                  whitespace: true,
                 },
               ],
             },
@@ -37,15 +56,15 @@
           tree-node-filter-prop="title"
           tree-default-expand-all
           v-decorator="[
-            `user`,
+            `adminAccount`,
             {
               rules: [
                 {
                   required: true,
                   message: '请选择租户管理员',
-                 
                 },
               ],
+              initialValue: 's0',
             },
           ]"
         >
@@ -66,7 +85,7 @@
       >
         <a-checkbox-group
           v-decorator="[
-            `roles`,
+            `systemCodes`,
             {
               rules: [
                 {
@@ -81,92 +100,62 @@
           style="width: 100%"
         >
           <a-row>
-            <a-col :span="24"
-              ><a-checkbox value="1"> 数据资产平台 </a-checkbox>
-            </a-col>
-            <a-col :span="24" class="page-col">
-              <a-checkbox value="2"> 数据开发平台 </a-checkbox>
-
-              <a-card v-if="flag2">
-                <a-form-model  ref="formmodel" :model="formmodel" layout="inline" :rules="rules">
-                  <a-row>
-                    <!-- <a-form-model-item style="color: rgba(0, 0, 0, 0.85)"
-                      >分配存储资源</a-form-model-item
-                    > -->
-                    <a-form-model-item prop="name" label="分配存储资源">
-                      <a-input-number :min="1" style="width: 100px" />
-                    </a-form-model-item>
-                    <a-form-model-item prop="selectValue">
-                      <a-select style="width: 60px">
-                        <a-select-option
-                          v-for="item in selectList"
-                          :key="item.value"
-                          :value="item.value"
-                        >
-                          {{ item.value }}
-                        </a-select-option>
-                      </a-select>
-                    </a-form-model-item>
-                  </a-row>
-                  <a-row>
-                    <a-col :span="24" style="color: rgba(0, 0, 0, 0.85)" >
-                      分配计算资源
-                    </a-col>
-                    <a-col :span="24" :push="4">
-                      <a-form-model-item label="内存" prop="name1">
-                        <a-input-number :min="1" style="width: 100px" />
-                      </a-form-model-item>
-                      <a-form-model-item prop="selectValue1">
-                        <a-select style="width: 60px">
-                          <a-select-option
-                            v-for="item in selectList"
-                            :key="item.value"
-                            :value="item.value"
-                          >
-                            {{ item.value }}
-                          </a-select-option>
-                        </a-select>
-                      </a-form-model-item>
-                    </a-col>
-                    <a-col :span="24" :push="4">
-                      <a-form-model-item label="CPU" prop="name2">
-                        <a-input-number :min="1" style="width: 100px" />
-                      </a-form-model-item>
-                      <a-form-model-item> core </a-form-model-item>
-                    </a-col>
-                  </a-row>
-                </a-form-model>
-              </a-card>
-            </a-col>
-            <a-col :span="24"
-              ><a-checkbox value="3"> 开放平台 </a-checkbox>
-            </a-col>
-            <a-col :span="24"
-              ><a-checkbox value="4"> 运营平台 </a-checkbox>
-            </a-col>
-            <a-col :span="24" class="page-col">
-              <a-checkbox value="5"> 采集与交换平台 </a-checkbox>
-              <a-card v-if="flag5">
-                <a-form-model
-                ref="formmodel"
-                  :model="formmodel1"
-                  layout="inline"
-                  :rules="rules1"
+            <a-col
+              v-for="(item, i) in checkList"
+              :key="item.systemCode"
+              :span="24"
+              :class="item.resourceNeedFlag ? 'page-col' : ''"
+            >
+              <a-checkbox :value="item.systemCode"
+                >{{ item.systemName }}
+              </a-checkbox>
+              <a-card
+                v-if="item.resourceNeedFlag && item.showFlag"
+                style="width: 100%"
+                class="system-list-card"
+              >
+                <a-row
+                  v-if="item.resourceDiskLimit && item.resourceDiskLimit > 0"
+                  type="flex"
+                  justify="space-between"
                 >
-                  <!-- <a-form-model-item style="color: rgba(0, 0, 0, 0.85)"
-                    >分配存储资源</a-form-model-item
-                  > -->
-                  <a-form-model-item prop="name" label="分配存储资源">
+                  <a-form-item
+                    label="分配存储资源"
+                    :label-col="{
+                      sm: { span: 12 },
+                      md: { span: 12 },
+                      xl: { span: 12 },
+                      xxl: { span: 12 },
+                    }"
+                    :wrapper-col="{ span: 1 }"
+                  >
                     <a-input-number
-                      v-model="formmodel1.name"
+                      v-decorator="[
+                        `systemList${i + 1}.resourceDisk`,
+                        {
+                          rules: [
+                            {
+                              required: true,
+                              message: '请输入值',
+                            },
+                          ],
+                          initialValue: 1,
+                        },
+                      ]"
                       :min="1"
                       style="width: 100px"
                     />
-                  </a-form-model-item>
-                  <a-form-model-item prop="selectValue">
+                  </a-form-item>
+                  <a-form-item>
                     <a-select
                       style="width: 60px"
-                      v-model="formmodel1.selectValue"
+                      v-decorator="[
+                        `systemList${i + 1}.resourceDiskValue`,
+                        {
+                          rules: [{ required: true, message: '请选择单位' }],
+                          initialValue: 'G',
+                        },
+                      ]"
                     >
                       <a-select-option
                         v-for="item in selectList"
@@ -176,8 +165,112 @@
                         {{ item.value }}
                       </a-select-option>
                     </a-select>
-                  </a-form-model-item>
-                </a-form-model>
+                  </a-form-item>
+                </a-row>
+                <a-row
+                  type="flex"
+                  v-if="
+                    (item.resourceMemoryLimit &&
+                      item.resourceMemoryLimit > 0) ||
+                    (item.resourceCpuLimit && item.resourceCpuLimit > 0)
+                  "
+                  style="color: rgba(0, 0, 0, 0.85)"
+                  justify="space-between"
+                >
+                  分配计算资源</a-row
+                >
+                <a-row
+                  type="flex"
+                  justify="space-between"
+                  v-if="
+                    item.resourceMemoryLimit && item.resourceMemoryLimit > 0
+                  "
+                  style="width: 100%"
+                >
+                  <a-form-item
+                    :label-col="{
+                      sm: { span: 17 },
+                      md: { span: 17 },
+                      xl: { span: 17 },
+                      xxl: { span: 17 },
+                    }"
+                    :wrapper-col="{ span: 6 }"
+                    label="内存"
+                  >
+                    <a-input-number
+                      v-decorator="[
+                        `systemList${i + 1}.resourceMemory`,
+                        {
+                          rules: [
+                            {
+                              required: true,
+                              message: '请输入值',
+                            },
+                          ],
+                          initialValue: 1,
+                        },
+                      ]"
+                      :min="1"
+                      style="width: 100px"
+                    />
+                  </a-form-item>
+                  <a-form-item>
+                    <a-select
+                      style="width: 60px"
+                      v-decorator="[
+                        `systemList${i + 1}.resourceMemoryValue`,
+                        {
+                          rules: [{ required: true, message: '请选择单位' }],
+                          initialValue: 'G',
+                        },
+                      ]"
+                    >
+                      <a-select-option
+                        v-for="item in selectList"
+                        :key="item.value"
+                        :value="item.value"
+                      >
+                        {{ item.value }}
+                      </a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-row>
+
+                <a-row
+                  type="flex"
+                  justify="space-between"
+                  v-if="item.resourceCpuLimit && item.resourceCpuLimit > 0"
+                  style="width: 100%"
+                >
+                  <a-form-item
+                    :label-col="{
+                      sm: { span: 17 },
+                      md: { span: 17 },
+                      xl: { span: 17 },
+                      xxl: { span: 17 },
+                    }"
+                    :wrapper-col="{ span: 6 }"
+                    label="CPU"
+                  >
+                    <a-input-number
+                      v-decorator="[
+                        `systemList${i + 1}.resourceCpu`,
+                        {
+                          rules: [
+                            {
+                              required: true,
+                              message: '请输入值',
+                            },
+                          ],
+                          initialValue: 1,
+                        },
+                      ]"
+                      :min="1"
+                      style="width: 100px"
+                    />
+                  </a-form-item>
+                  core
+                </a-row>
               </a-card>
             </a-col>
           </a-row>
@@ -200,6 +293,7 @@
   </a-card>
 </template>
 <script >
+import { systemList,insertTenant } from "@/api/tenant";
 const treeData = [
   {
     title: "组织架构1",
@@ -245,24 +339,106 @@ const treeData = [
 ];
 const checkList = [
   {
-    id: "s0",
-    name: "数据资产平台",
+    systemCode: "1",
+    systemName: "1",
+    resourceNeedFlag: 1,
+    createType: 1,
+    databaseFile: "1",
+    applicationFile: "1",
+    resourceCpuLimit: "1",
+    resourceMemoryLimit: "1",
+    resourceDiskLimit: "1",
+    enabled: 1,
+    createdBy: null,
+    createdTime: "2021-07-09 11:23:41",
+    lastUpdatedBy: null,
+    lastUpdatedTime: null,
+    showFlag: false,
   },
   {
-    id: "s1",
-    name: "数据开发平台",
+    systemCode: "2",
+    systemName: "数据资产平台",
+    resourceNeedFlag: 0,
+    createType: null,
+    databaseFile: null,
+    applicationFile: null,
+    resourceCpuLimit: "0",
+    resourceMemoryLimit: "0",
+    resourceDiskLimit: "0",
+    enabled: 1,
+    createdBy: "1",
+    createdTime: "2021-07-12 09:04:11",
+    lastUpdatedBy: null,
+    lastUpdatedTime: null,
+    showFlag: false,
   },
   {
-    id: "s2",
-    name: "开放平台",
+    systemCode: "3",
+    systemName: "数据开发平台",
+    resourceNeedFlag: 1,
+    createType: null,
+    databaseFile: null,
+    applicationFile: null,
+    resourceCpuLimit: "1",
+    resourceMemoryLimit: "1",
+    resourceDiskLimit: "1",
+    enabled: 1,
+    createdBy: "1",
+    createdTime: "2021-07-12 09:05:02",
+    lastUpdatedBy: null,
+    lastUpdatedTime: null,
+    showFlag: false,
   },
   {
-    id: "s3",
-    name: "运营平台",
+    systemCode: "4",
+    systemName: "开放平台",
+    resourceNeedFlag: 0,
+    createType: null,
+    databaseFile: null,
+    applicationFile: null,
+    resourceCpuLimit: "0",
+    resourceMemoryLimit: "0",
+    resourceDiskLimit: "0",
+    enabled: 1,
+    createdBy: "1",
+    createdTime: "2021-07-12 09:05:35",
+    lastUpdatedBy: null,
+    lastUpdatedTime: null,
+    showFlag: false,
   },
   {
-    id: "s4",
-    name: "采集与交换平台",
+    systemCode: "5",
+    systemName: "运营平台",
+    resourceNeedFlag: 0,
+    createType: null,
+    databaseFile: null,
+    applicationFile: null,
+    resourceCpuLimit: "0",
+    resourceMemoryLimit: "0",
+    resourceDiskLimit: "0",
+    enabled: 1,
+    createdBy: "1",
+    createdTime: "2021-07-12 09:05:53",
+    lastUpdatedBy: null,
+    lastUpdatedTime: null,
+    showFlag: false,
+  },
+  {
+    systemCode: "6",
+    systemName: "采集与交换平台",
+    resourceNeedFlag: 1,
+    createType: null,
+    databaseFile: null,
+    applicationFile: null,
+    resourceCpuLimit: "0",
+    resourceMemoryLimit: "0",
+    resourceDiskLimit: "1",
+    enabled: 1,
+    createdBy: "1",
+    createdTime: "2021-07-12 09:06:30",
+    lastUpdatedBy: null,
+    lastUpdatedTime: null,
+    showFlag: false,
   },
 ];
 const selectList = [{ value: "M" }, { value: "G" }, { value: "T" }];
@@ -272,60 +448,93 @@ export default {
       treeData,
       selectList,
       checkList,
-      horizontal: "horizontal",
-      flag2: false,
-      flag5: false,
-      formmodel: {
-        name: "",
-        selectValue: "",
-      },
-      rules: {
-        name: [{ required: true, message: "请输入存储值" }],
-        selectValue: [{ required: true, message: "请选择存储单位" }],
-        name1: [{ required: true, message: "请输入存储值" }],
-        selectValue1: [{ required: true, message: "请选择存储单位" }],
-        name2: [{ required: true, message: "请输入存储值" }],
-      },
-      formmodel1: {
-        name: "",
-        selectValue: "",
-      },
-      rules1: {
-        name: [{ required: true, message: "请输入存储值", trigger: "blur" }],
-        selectValue: [{ required: true, message: "请选择存储单位" }],
-      },
     };
   },
   beforeCreate() {
     this.form = this.$form.createForm(this);
+    // this.form.getFieldDecorator("systemList", {
+    //   initialValue: [],
+    //   preserve: true,
+    // });
+  },
+  mounted() {
+    // this.getSystemList()
   },
   methods: {
+    async getSystemList() {
+      const { data } = await systemList();
+      if (data.code === "0") {
+        this.checkList = data.data;
+        this.checkList.forEach((item) => {
+          item.showFlag = false;
+        });
+      }
+    },
     onGoBack() {
+      this.checkList.forEach((item) => {
+        item.showFlag = false;
+      });
       this.$router.go(-1);
     },
     onSubmit(e) {
       e.preventDefault();
       this.form.validateFields((err, values) => {
         if (!err) {
-          this.$refs.formmodel.validate((valid) => {
-            if (valid) {
-              console.log(values);
-            } 
-          });
+          this.famtFunc(values);
         }
       });
     },
+    famtFunc(values) {
+      // 数据格式，
+      const arr = [];
+      values.systemCodes.forEach((item) => {
+        for (const key in values) {
+          if (key === `systemList${item}`) {
+            arr.push({
+              systemCode: item,
+              resourceCpu: values[`${key}`].resourceCpu,
+              resourceMemory:values[`${key}`].resourceMemory,
+              resourceDisk: values[`${key}`].resourceDisk,
+            });
+          }
+        }
+      });
+      const obj = {
+        tenantCode: values.tenantCode,
+        tenantName: values.tenantName,
+        adminAccount: values.adminAccount,
+        adminAccountName: "张三",
+        tenantSystemEntityList: arr,
+      };
+      this.insertTenantFunc(obj)
+    },
+    async insertTenantFunc(obj){
+      const {data } = await insertTenant(obj)
+      console.log(data);
+    },
     handleChange(value) {
-      if (value.includes("2")) {
-        this.flag2 = true;
-      } else {
-        this.flag2 = false;
-      }
-      if (value.includes("5")) {
-        this.flag5 = true;
-      } else {
-        this.flag5 = false;
-      }
+      this.checkList.map((item) => {
+        if (value.includes(item.systemCode)) {
+          item.showFlag = true;
+
+          // const { form } = this;
+          // const systemList = form.getFieldValue("systemList");
+          // const nextKeys = systemList.concat(item.systemCode);
+          // form.setFieldsValue({
+          //   systemList: nextKeys,
+          // });
+        } else {
+          item.showFlag = false;
+          // const { form } = this;
+          // const size1 = form.getFieldValue("systemList");
+
+          // form.setFieldsValue({
+          //   systemList: size1.filter(
+          //     (subItem, index) => subItem !== item.systemCode
+          //   ),
+          // });
+        }
+      });
     },
   },
 };
@@ -343,9 +552,14 @@ export default {
     .ant-card {
       margin-top: 0.16rem;
       .ant-card-body {
-        padding: 0 0 0 0.32rem;//
+        padding: 0 0 0 0.32rem; //
       }
     }
+  }
+}
+.system-list-card {
+  .ant-form-explain {
+    width: 100px !important;
   }
 }
 </style>

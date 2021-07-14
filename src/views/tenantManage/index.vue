@@ -41,13 +41,15 @@
           bordered
           :pagination="false"
         >
-          <template slot="roles" slot-scope="text, record">
-            <a-tag v-for="(item, i) in record.roles" :key="i">
-              {{item.systemName}}
+          <template slot="tenantSystemEntityList" slot-scope="text, record">
+            <a-tag @click="onEdit(record)" v-for="(item, i) in record.tenantSystemEntityList" :key="i">
+              {{ item.systemName }}
             </a-tag>
           </template>
           <template slot="action" slot-scope="text, record">
-            <a-button type="link"><a-icon type="edit" />编辑</a-button>
+            <a-button type="link" @click="onEdit(record)"
+              ><a-icon type="edit" />编辑</a-button
+            >
             <a-divider type="vertical" />
             <a-button
               type="link"
@@ -70,13 +72,15 @@
         />
       </a-card>
     </div>
-    <router-view v-show="toggleShow"></router-view>
+    <!-- <router-view v-show="toggleShow"></router-view> -->
+    <addModel ref="addModelRef" />
   </div>
 </template>
 <script >
 import Pagination from "@/components/Pagination";
+import addModel from "./components/addModel.vue";
 import listMixin from "@/mixins/listMixin";
-import { tenantList, systemList } from "@/api/tenant";
+import { tenantList, systemList, delTenant } from "@/api/tenant";
 const columns = [
   {
     dataIndex: "tenantName",
@@ -86,10 +90,11 @@ const columns = [
   },
   {
     title: "系统权限",
-    dataIndex: "roles",
-    key: "roles",
+    dataIndex: "tenantSystemEntityList",
+    key: "tenantSystemEntityList",
     align: "center",
-    scopedSlots: { customRender: "roles" },
+    scopedSlots: { customRender: "tenantSystemEntityList" },
+    width: "6rem",
   },
   {
     title: "租户管理员",
@@ -117,6 +122,7 @@ const data = [];
 export default {
   components: {
     Pagination,
+    addModel,
   },
   computed: {
     toggleShow: function () {
@@ -124,7 +130,9 @@ export default {
     },
   },
   mounted() {
-    this.getSystemList();
+    if (!this.toggleShow) {
+      this.getSystemList();
+    }
   },
   mixins: [listMixin],
   methods: {
@@ -135,7 +143,7 @@ export default {
       }
     },
     async getList() {
-      const _this = this
+      const _this = this;
       const obj = {
         curPage: this.current,
         pageSize: this.pageSize,
@@ -145,26 +153,62 @@ export default {
       if (data.code === "0") {
         this.total = data.total;
         this.data = data.data;
-        this.data.forEach(item=>{
-          item.roles = []
-          item.tenantSystemEntityList.forEach(subItem=>{
-            item.roles = _this.rolesList.filter(e=>e.systemCode===subItem.systemCode)
-          })
-        })
+        this.data.forEach((item) => {
+          for (let i = 0; i < this.rolesList.length; i++) {
+            const e = this.rolesList[i];
+            for (let j = 0; j < item.tenantSystemEntityList.length; j++) {
+              const subItem = item.tenantSystemEntityList[j];
+              if (e.systemCode === subItem.systemCode) {
+                subItem.systemName = e.systemName;
+              }
+            }
+          }
+        });
       } else this.$msg.error(data.msg);
     },
     onSearch() {
-     this.current = 1;
-     this.getList()
+      this.current = 1;
+      this.getList();
     },
     onClear() {
-      this.formState.name = "";
-      this.getList()
+      this.formState.tenantName = "";
+      this.getList();
     },
-    onDelFunc() {},
+    onDelFunc({ tenantId, tenantName }) {
+      const _this = this;
+      const obj = {
+        title: "删除",
+        content: `您确定要删除${tenantName}吗?`,
+        onOk() {
+          delTenant({ tenantId: tenantId }).then((res) => {
+            if (res.data.code === "0") {
+              _this.$msg.success(res.data.msg);
+              _this.getList();
+            } else {
+              _this.$msg.error(res.data.msg);
+            }
+          });
+        },
+        onCancel() {
+          console.log("xixi");
+        },
+      };
+      this.$showConfirm(obj);
+    },
     onAddPage() {
-      this.$router.push({
-        path: "/tenantManage/modifyTenantManage",
+      this.$nextTick(() => {
+        this.$refs.addModelRef.getSystemList();
+        this.$refs.addModelRef.title = '创建新租户';
+        this.$refs.addModelRef.edit = false;
+        this.$refs.addModelRef.showVisible = true;
+      });
+    },
+    onEdit(data) {
+      this.$nextTick(() => {
+        this.$refs.addModelRef.title = '编辑租户';
+        this.$refs.addModelRef.edit = true;
+        this.$refs.addModelRef.showVisible = true;
+        this.$refs.addModelRef.setFunc(data);
       });
     },
   },
@@ -184,7 +228,17 @@ export default {
 
 <style lang="less" scoped>
 .tenant-manage {
-  // height: calc(100% - 128px);
+  height: 100%;
   overflow-y: auto;
+  padding: 0.16rem;
+  margin-bottom: 0.36rem;
+  .ant-tag{
+     height: 0.4rem;
+    line-height: 0.4rem;
+    font-size: 12px;
+    margin-bottom: 0.08rem;
+    cursor: pointer;
+  }
 }
+
 </style>

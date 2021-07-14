@@ -235,8 +235,9 @@ export default {
 
 <style lang="less" scoped>
 .user-manage {
-  // height: calc(100% - 128px);
+  height: 100%;
   overflow-y: auto;
+  padding: 0.16rem;
   .ant-form-item {
     width: 100%;
   }

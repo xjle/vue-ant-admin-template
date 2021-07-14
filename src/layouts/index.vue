@@ -28,9 +28,8 @@
       </a-layout-header>
       <!-- 内容 -->
       <a-layout-content
-        :style="{
-          padding: '0.16rem',
-        }"
+        class="app-content"
+       
       >
         <a-breadcrumb class="app-breadcrumb" :routes="routes">
           <template
@@ -59,16 +58,16 @@ export default {
     Header,
     Sider,
   },
-   created() {
+  created() {
     this.routes = this.$route.matched.filter((item) => item.meta.title);
   },
   data() {
     return {
       collapsed: false,
-      routes:[]
+      routes: [],
     };
   },
-   watch: {
+  watch: {
     // 监听路由变化
     $route(e) {
       this.routes = e.matched.filter((items) => items.meta.title);
@@ -79,6 +78,7 @@ export default {
 
 <style lang="less" scoped>
 .app-wapper {
+  height: 100vh;
   .app-sider {
     .logo {
       line-height: 46px;
@@ -105,10 +105,15 @@ export default {
       transform: color 0.3s;
     }
   }
-  .app-breadcrumb {
-    height: 32px;
-    line-height: 32px;
-    margin-bottom: 0.16rem;
+  .app-content {
+    height: calc(100% - 102px);
+    overflow: hidden;
+    .app-breadcrumb {
+      height: 32px;
+      line-height: 32px;
+      padding: 0 0.16rem;
+      // padding: 0.16rem 0.16rem 0 0.16rem;
+    }
   }
 }
 </style>
