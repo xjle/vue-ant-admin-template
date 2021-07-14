@@ -129,7 +129,7 @@
                   <a-row
                     v-if="item.resourceDiskLimit && item.resourceDiskLimit > 0"
                     type="flex"
-                    justify="space-between"
+                    justify="start"
                   >
                     <a-form-item
                       label="分配存储资源"
@@ -193,7 +193,7 @@
                   >
                   <a-row
                     type="flex"
-                    justify="space-between"
+                    justify="start"
                     v-if="
                       item.resourceMemoryLimit && item.resourceMemoryLimit > 0
                     "
@@ -226,7 +226,7 @@
                         style="width: 100px"
                       />
                     </a-form-item>
-                    <a-form-item>
+                    <a-form-item style="padding-left: 0.78rem;">
                       <a-select
                         style="width: 60px"
                         v-decorator="[
@@ -250,7 +250,7 @@
 
                   <a-row
                     type="flex"
-                    justify="space-between"
+                    justify="start"
                     v-if="item.resourceCpuLimit && item.resourceCpuLimit > 0"
                     style="width: 100%"
                   >
@@ -281,7 +281,7 @@
                         style="width: 100px"
                       />
                     </a-form-item>
-                    core
+                    <a-form-item style="padding-left:0.88rem;">core</a-form-item>
                   </a-row>
                 </a-card>
               </a-col>
